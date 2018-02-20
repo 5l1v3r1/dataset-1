@@ -37,6 +37,7 @@
 
 ## Someday, Maybe
 
++ [ ] Convert CRUD operations to accept a Document interface rather than a map[string]interface{} object, this will ease integration of complex structs like EPrints
 + [ ] Integrate lunrjs and an index.html file into the root folder of a collection, this could be used to provide a web browser read interface to the collection without installing dataset itself.
 + [ ] Depreciate _dsindexer_ in favor of Bleve native cli
 + [ ] Memory consumption is high for attaching, figure out how to improve memory usage

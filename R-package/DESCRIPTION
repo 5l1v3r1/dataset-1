@@ -1,0 +1,8 @@
+
+Package: dataset
+Version: v0.0.30-dev
+Title: dataset is a JSON document management tool
+Description: dataset provides CRUD operation, indexing, extracting and data import/export features for working with collections of JSON documents
+Author: R. S. Doiel and Tom Morrell
+Maintainer: R. S. Doiel and Tom Morrell
+License: 

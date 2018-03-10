@@ -41,19 +41,22 @@ $(LIB_NAME)$(EXT): ../libdataset/$(LIB_NAME).go
 	go build -buildmode=c-shared -o "$(LIB_NAME)$(EXT)" "../libdataset/$(LIB_NAME).go"
 
 test: $(LIB_NAME)$(EXT)
-	python3 dataset_test.py
+	julia dataset_test.jl
 
 clean:
 	if [ -f "$(LIB_NAME)$(EXT)" ]; then rm "$(LIB_NAME)$(EXT)"; fi
 	if [ -f "$(LIB_NAME).h" ]; then rm "$(LIB_NAME).h"; fi
 	if [ -d "test_collection.ds" ]; then rm -fR "test_collection.ds"; fi	
 	if [ -d "test_gsheet.ds" ]; then rm -fR "test_gsheet.ds"; fi	
-	if [ -d "__pycache__" ]; then rm -fR "__pycache__"; fi	
+	if [ -d test_check_and_repair.ds ]; then rm -fR test_check_and_repair.ds; fi
+	if [ -d test_index.bleve ]; then rm -fR test_index.bleve; fi
+	if [ -f test_index_map.json ]; then rm test_index_map.json; fi
+	if [ -d test_julia.ds ]; then rm -fR test_julia.ds; fi
 
 release: $(LIB_NAME)$(EXT)
 	go build -buildmode=c-shared -o "$(LIB_NAME)$(EXT)" "../libdataset/$(LIB_NAME).go"
 	mkdir -p ../dist
-	zip -r "../dist/py3-$(LIB_NAME)-$(VERSION)-$(OS)-$(ARCH).zip" *.py "$(LIB_NAME)$(EXT)" "README.md"
+	zip -r "../dist/Julia-$(LIB_NAME)-$(VERSION)-$(OS)-$(ARCH).zip" *.py "$(LIB_NAME)$(EXT)" "README.md"
 
 status:
 	git status

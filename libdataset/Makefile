@@ -1,5 +1,5 @@
 #
-# Simple Makefile for building C-Shared library and Python3 module.
+# Simple Makefile for building C-Shared library.
 #
 PROJECT = dataset
 
@@ -37,8 +37,8 @@ ifeq ($(ARCH), x86_64)
 endif
 
 
-$(LIB_NAME)$(EXT): ../libdataset/$(LIB_NAME).go
-	go build -buildmode=c-shared -o "$(LIB_NAME)$(EXT)" "../libdataset/$(LIB_NAME).go"
+$(LIB_NAME)$(EXT): $(LIB_NAME).go
+	go build -buildmode=c-shared -o "$(LIB_NAME)$(EXT)" "$(LIB_NAME).go"
 
 test: $(LIB_NAME)$(EXT)
 	python3 dataset_test.py
@@ -51,7 +51,7 @@ clean:
 	if [ -d "__pycache__" ]; then rm -fR "__pycache__"; fi	
 
 release: $(LIB_NAME)$(EXT)
-	go build -buildmode=c-shared -o "$(LIB_NAME)$(EXT)" "../libdataset/$(LIB_NAME).go"
+	go build -buildmode=c-shared -o "$(LIB_NAME)$(EXT)" "$(LIB_NAME).go"
 	mkdir -p ../dist
 	zip -r "../dist/py3-$(LIB_NAME)-$(VERSION)-$(OS)-$(ARCH).zip" *.py "$(LIB_NAME)$(EXT)" "README.md"
 

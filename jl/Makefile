@@ -37,8 +37,8 @@ ifeq ($(ARCH), x86_64)
 endif
 
 
-$(LIB_NAME)$(EXT): ../libdataset/$(LIB_NAME).go
-	go build -buildmode=c-shared -o "$(LIB_NAME)$(EXT)" "../libdataset/$(LIB_NAME).go"
+$(LIB_NAME)$(EXT): ../$(LIB_NAME)/$(LIB_NAME).go
+	go build -buildmode=c-shared -o "$(LIB_NAME)$(EXT)" "../$(LIB_NAME)/$(LIB_NAME).go"
 
 test: $(LIB_NAME)$(EXT)
 	julia dataset_test.jl
@@ -54,7 +54,7 @@ clean:
 	if [ -d test_julia.ds ]; then rm -fR test_julia.ds; fi
 
 release: $(LIB_NAME)$(EXT)
-	go build -buildmode=c-shared -o "$(LIB_NAME)$(EXT)" "../libdataset/$(LIB_NAME).go"
+	go build -buildmode=c-shared -o "$(LIB_NAME)$(EXT)" "../$(LIB_NAME)/$(LIB_NAME).go"
 	mkdir -p ../dist
 	zip -r "../dist/Julia-$(LIB_NAME)-$(VERSION)-$(OS)-$(ARCH).zip" *.py "$(LIB_NAME)$(EXT)" "README.md"
 

@@ -18,10 +18,11 @@ these instructions can go away.
 Download the Python 3.6.4 sources
 
 ```
-    mkdir $HOME/src
-    wget https://www.python.org/ftp/python/3.6.0/Python-3.6.4.tgz
+    mkdir -p $HOME/src
+    cd $HOME/src
+    wget https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tgz
     tar zxvf Python-3.6.4.tgz
-    cd src/Python-3.6.4
+    cd Python-3.6.4
     bash configure --prefix=$HOME
     make altinstall
 ```

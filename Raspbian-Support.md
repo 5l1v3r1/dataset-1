@@ -2,11 +2,11 @@
 # Raspbian Stretch
 
 This project supports Python 3.6 which at this time (March 2018)
-isn't the default installation of Python 3 on Raspbian. If
-you wish to use the Python module on a Raspberry Pi using the
-current release of Raspbian you'll need to upgrade your Python.
-Below are the steps I took to do compile and install 3.6.4 in
-my home directory.  Your milleage may very.  Hopefully in an 
+isn't the version of Python 3 on Raspbian. If
+you wish to use the Python module on a Raspberry Pi then you
+need a new version of Python.  These are the instructions I derived
+for compiling Python 3.6.4 in my home directory as an alternate
+to the Raspbian provided 3.5.  Your milleage may very. Hopefully in an 
 upcoming Raspbian release 3.6 will become the default and 
 these instructions can go away.
 

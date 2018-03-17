@@ -32,13 +32,14 @@ to run to use
 
 ```shell
     export PATH="$HOME/bin:$PATH"
-    alias python3="$HOME/bin/python3.6"
+    #FIXME: need to use the command to make $HOME/bin/python3.6 default
 ```
 
 You will need to install the depend Python packages in your new home
 installation.
 
 ```shell
+    #FIXME: need to include the command to find ctypes...
 ```
 
 The following were based on a [gist](https://gist.github.com/dschep/24aa61672a2092246eaca2824400d37f)

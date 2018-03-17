@@ -17,7 +17,7 @@ these instructions can go away.
 
 Download the Python 3.6.4 sources
 
-```
+```shell
     mkdir -p $HOME/src
     cd $HOME/src
     wget https://www.python.org/ftp/python/3.6.4/Python-3.6.4.tgz
@@ -25,6 +25,20 @@ Download the Python 3.6.4 sources
     cd Python-3.6.4
     bash configure --prefix=$HOME
     make altinstall
+```
+
+Now we need to make sure the this new Python is the Python 3 found
+to run to use
+
+```shell
+    export PATH="$HOME/bin:$PATH"
+    alias python3="$HOME/bin/python3.6"
+```
+
+You will need to install the depend Python packages in your new home
+installation.
+
+```shell
 ```
 
 The following were based on a [gist](https://gist.github.com/dschep/24aa61672a2092246eaca2824400d37f)

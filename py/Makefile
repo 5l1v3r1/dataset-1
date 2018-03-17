@@ -46,9 +46,8 @@ build: $(PROJECT)/$(LIB_NAME)$(EXT)
 install: $(PROJECT)/$(LIB_NAME)$(EXT)
 	$(USE_SUDO) python3 setup.py install --record files.txt
 
-
-$(PROJECT)/$(LIB_NAME)$(EXT): $(LIB_NAME).go
-	go build -buildmode=c-shared -o "$(PROJECT)/$(LIB_NAME)$(EXT)" "$(LIB_NAME).go"
+dataset/$(LIB_NAME)$(EXT): ../$(LIB_NAME)/$(LIB_NAME).go
+	go build -buildmode=c-shared -o "$(PROJET)/$(LIB_NAME)$(EXT)" "../$(LIB_NAME)/$(LIB_NAME).go"
 
 clean:
 	if [ -f "MANIFEST" ]; then $(USE_SUDO) rm MANIFEST; fi

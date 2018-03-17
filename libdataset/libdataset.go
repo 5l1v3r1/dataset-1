@@ -1,5 +1,5 @@
 //
-// py/dataset.go is a C shared library for implementing a dataset module in Python3
+// libdataset.go is a C shared library for implementing a dataset modules in other languages (e.g. Python 3)
 //
 // Authors R. S. Doiel, <rsdoiel@library.caltech.edu> and Tom Morrel, <tmorrell@library.caltech.edu>
 

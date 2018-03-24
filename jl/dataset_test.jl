@@ -759,6 +759,7 @@ if error_count > 0
     println("Total errors ", error_count)
     exit(1)
 end
-println("Success!")
+println("PASS")
+println("OK, dataset_test.jl")
 
 

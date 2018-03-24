@@ -745,6 +745,7 @@ error_count += test_issue32(collection_name)
 error_count += test_attachments(collection_name)
 error_count += test_join(collection_name)
 error_count += test_check_repair("test_check_and_repair.ds")
+#FIXME: Need to check if GSheet access is setup, otherwise skip with warning
 error_count += test_gsheet("test_gsheet.ds", "../etc/test_gsheet.bash")
 
 #=

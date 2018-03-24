@@ -755,7 +755,7 @@ println("Tests completed")
 
 # Summarize our test results
 if error_count > 0
-    println("Total errors", error_count)
+    println("Total errors ", error_count)
     exit(1)
 end
 println("Success!")

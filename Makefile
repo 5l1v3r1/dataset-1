@@ -51,11 +51,16 @@ python:
 website: page.tmpl README.md nav.md INSTALL.md LICENSE css/site.css
 	bash mk-website.bash
 
-test: clean bin/dataset$(EXT) bin/dsws$(EXT)
+test_julia: clean
+	cd jl && $(MAKE) test
+
+test_python: clean
+	cd py && $(MAKE) test
+
+test: clean bin/dataset$(EXT) bin/dsws$(EXT) test_python test_julia
 	go test
 	cd gsheet && go test -client-secret="../etc/client_secret.json" -spreadsheet-id="1y23sLVy4rfL2U81kYhOYG6x3dTxnexqJcVBasIsyEx8"
 	bash test_cmd.bash
-	cd py && $(MAKE) test
 
 format:
 	gofmt -w dataset.go
@@ -84,6 +89,7 @@ clean:
 	if [ -d dist ]; then rm -fR dist; fi
 	if [ -d testdata ]; then rm -fR testdata; fi
 	cd py && $(MAKE) clean
+	cd jl && $(MAKE) clean
 
 dist/linux-amd64:
 	mkdir -p dist/bin

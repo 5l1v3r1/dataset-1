@@ -25,7 +25,7 @@ function verbose_off()
 end
 
 function version()
-    value = ccall((:dataset_version, "./libdataset"), Cstring, (),)
+    value = ccall((:version, "./libdataset"), Cstring, (),)
     convert(UTF8String, bytestring(value))
 end
 

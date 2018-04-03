@@ -22,7 +22,7 @@ endif
 ifeq ($(OS), Darwin)
 	EXT = .dylib
 	ARCH = $(shell arch)
-	OS = maxosx
+	OS = macosx
 endif
 ifeq ($(OS), Linux)
 	EXT = .so
@@ -36,6 +36,12 @@ ifeq ($(ARCH), x86_64)
 	ARCH = amd64
 endif
 
+USE_SUDO =
+ifeq ($(use_sudo), true)
+	USE_SUDO = sudo
+endif
+
+build: $(LIB_NAME)$(EXT)
 
 $(LIB_NAME)$(EXT): $(LIB_NAME).go
 	go build -buildmode=c-shared -o "$(LIB_NAME)$(EXT)" "$(LIB_NAME).go"

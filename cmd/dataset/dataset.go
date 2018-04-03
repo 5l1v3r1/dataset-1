@@ -307,9 +307,27 @@ func listJSONDoc(args ...string) (string, error) {
 	if len(collectionName) == 0 {
 		return "", fmt.Errorf("Missing a collection name")
 	}
-	if len(args) == 0 {
+	if len(args) == 0 && len(keyFName) == 0 {
 		return "[]", nil
 	}
+	var keyList []string
+	if len(keyFName) > 0 {
+		src, err := ioutil.ReadFile(keyFName)
+		if err != nil {
+			return "", fmt.Errorf("Cannot read key file %s, %s", keyFName, err)
+		}
+		txt := fmt.Sprintf("%s", src)
+		for _, key := range strings.Split(txt, "\n") {
+			key = strings.TrimSpace(key)
+			if len(key) > 0 {
+				keyList = append(keyList, key)
+			}
+		}
+	}
+	if len(args) > 0 {
+		keyList = append(keyList, args...)
+	}
+
 	collection, err := dataset.Open(collectionName)
 	if err != nil {
 		return "", err
@@ -317,7 +335,7 @@ func listJSONDoc(args ...string) (string, error) {
 	defer collection.Close()
 
 	recs := []map[string]interface{}{}
-	for _, name := range args {
+	for _, name := range keyList {
 		m := map[string]interface{}{}
 		err := collection.Read(name, m)
 		if err != nil {
@@ -955,10 +973,7 @@ func extract(params ...string) (string, error) {
 	filterExpr := strings.TrimSpace(params[0])
 	dotExpr := strings.TrimSpace(params[1])
 	lines, err := collection.Extract(filterExpr, dotExpr)
-	if err != nil {
-		return "", fmt.Errorf("Can't extract %s, %s", dotExpr, err)
-	}
-	return strings.Join(lines, "\n"), nil
+	return strings.Join(lines, "\n"), err
 }
 
 // indexer replaces dsindexer command and is used to build a Bleve index for a collection
@@ -986,6 +1001,12 @@ func indexer(params ...string) (string, error) {
 		}
 	}
 
+	c, err := dataset.Open(collectionName)
+	if err != nil {
+		return "", fmt.Errorf("Cannot open collection %s, %s", collectionName, err)
+	}
+	defer c.Close()
+
 	if len(keyFName) > 0 {
 		src, err := ioutil.ReadFile(keyFName)
 		if err != nil {
@@ -993,34 +1014,28 @@ func indexer(params ...string) (string, error) {
 		}
 		txt := fmt.Sprintf("%s", src)
 		for _, key := range strings.Split(txt, "\n") {
-			keyList = append(keyList, strings.TrimSpace(key))
+			key = strings.TrimSpace(key)
+			if len(key) > 0 {
+				keyList = append(keyList, key)
+			}
 		}
-	}
-
-	c, err := dataset.Open(collectionName)
-	if err != nil {
-		return "", fmt.Errorf("Cannot open collection %s, %s", collectionName, err)
-	}
-	defer c.Close()
-
-	keys := []string{}
-	if len(keyList) == 0 {
-		keys = c.Keys()
+	} else {
+		keyList = c.Keys()
 	}
 
 	if batchSize == 0 {
-		if len(keys) > 100000 {
+		if len(keyList) > 100000 {
 			batchSize = 1000
-		} else if len(keys) > 10000 {
-			batchSize = len(keys) / 100
-		} else if len(keys) > 1000 {
-			batchSize = len(keys) / 10
+		} else if len(keyList) > 10000 {
+			batchSize = len(keyList) / 100
+		} else if len(keyList) > 1000 {
+			batchSize = len(keyList) / 10
 		} else {
 			batchSize = 100
 		}
 	}
 
-	err = c.Indexer(indexName, indexMapName, keys, batchSize)
+	err = c.Indexer(indexName, indexMapName, keyList, batchSize)
 	if err != nil {
 		return "", fmt.Errorf("Indexing error %s %s, %s", collectionName, indexName, err)
 	}
@@ -1033,6 +1048,7 @@ func deindexer(params ...string) (string, error) {
 	var (
 		indexName string
 		keyFName  string
+		keyList   []string
 	)
 	if len(params) == 0 {
 		return "", fmt.Errorf("syntax: %s deindexer INDEX_NAME KEY_FILENAME", os.Args[0])
@@ -1052,7 +1068,6 @@ func deindexer(params ...string) (string, error) {
 		}
 	}
 
-	keys := []string{}
 	if len(keyFName) > 0 {
 		src, err := ioutil.ReadFile(keyFName)
 		if err != nil {
@@ -1062,26 +1077,26 @@ func deindexer(params ...string) (string, error) {
 		for _, key := range strings.Split(txt, "\n") {
 			key = strings.TrimSpace(key)
 			if len(key) > 0 {
-				keys = append(keys, key)
+				keyList = append(keyList, key)
 			}
 		}
 	}
-	if len(keys) == 0 {
+	if len(keyList) == 0 {
 		return "", fmt.Errorf("Deindexing requires a list of keys to de-index")
 	}
 
 	if batchSize == 0 {
-		if len(keys) > 100000 {
+		if len(keyList) > 100000 {
 			batchSize = 1000
-		} else if len(keys) > 10000 {
-			batchSize = len(keys) / 100
-		} else if len(keys) > 1000 {
-			batchSize = len(keys) / 10
+		} else if len(keyList) > 10000 {
+			batchSize = len(keyList) / 100
+		} else if len(keyList) > 1000 {
+			batchSize = len(keyList) / 10
 		} else {
 			batchSize = 100
 		}
 	}
-	if err := dataset.Deindexer(indexName, keys, batchSize); err != nil {
+	if err := dataset.Deindexer(indexName, keyList, batchSize); err != nil {
 		return "", fmt.Errorf("Deindexing error %s %s, %s", collectionName, indexName, err)
 	}
 	// return success

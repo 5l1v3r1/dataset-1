@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
-from distutils.core import setup
-from site import getsitepackages
+
+#from distutils.core import setup
+#from site import getsitepackages
+#site_package_location = os.path.join(getsitepackages()[0], "dataset")
+
+from setuptools import setup, find_packages
 
 import sys
 import os
@@ -16,6 +20,9 @@ def read(fname):
     return src
 
 codemeta_json = "codemeta.json"
+if os.path.exists(codemeta_json) == False:
+    shutil.copyfile(path.join("..", codemeta_json), codemeta_json)
+
 # If we're running sdist make sure our local codemeta.json is up to date!
 if "sdist" in sys.argv:
     # Project Metadata and README
@@ -28,7 +35,7 @@ with open(codemeta_json, mode = "r", encoding = "utf-8") as f:
     meta = json.loads(src)
 
 # Let's make our symvar string
-version = "v"+meta["version"]
+version = meta["version"]
 #version = meta["version"]
 
 # Now we need to pull and format our author, author_email strings.
@@ -39,13 +46,13 @@ for obj in meta["author"]:
     family = obj["familyName"]
     email = obj["email"]
     if len(author) == 0:
-        author = f"{given} {family}"
+        author = given + " " + family
     else:
-        author = author + f", {given} {family}"
+        author = author + ", " + given + " " + family
     if len(author_email) == 0:
-        author_email = f"{email}"
+        author_email = email
     else:
-        author_email = author_email + f", {email}"
+        author_email = author_email + ", " + email
 
 # Setup for our Go based shared library as a "data_file" since Python doesn't grok Go.
 platform = os.uname().sysname
@@ -60,7 +67,9 @@ elif platform.startswith("Win"):
     platform = "Windows"
     OS_Classifier = "Operating System :: Microsoft :: Windows :: Windows 10"
         
-site_package_location = os.path.join(getsitepackages()[0], "dataset")
+if os.path.exists(os.path.join("dataset", shared_library_name)) == False:
+    print("Missing compiled shared library " + shared_library_name + " in dataset module")
+    sys.exit(1)
 
 # Now that we know everything configure out setup
 setup(name = "dataset",
@@ -72,12 +81,13 @@ setup(name = "dataset",
     url = "https://caltechlibrary.github.io/dataset",
     download_url = "https://github.com/caltechlibrary/dataset/latest/releases",
     license = meta["license"],
-    packages = ["dataset"],
-    data_files = [
-        (site_package_location, [os.path.join("dataset", shared_library_name)]),
-    ],
+    packages = find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests", "*_test.py"]),
+    package_data = {
+        '': [ '*.txt', '*.so', '*.dll', '*.dylib'],
+    },
     platforms = [platform],
     keywords = ["JSON", "CSV", "data science", "storage"],
+    include_package_data = True,
     classifiers = [
         "Development Status :: Alpha",
         "Environment :: Console",

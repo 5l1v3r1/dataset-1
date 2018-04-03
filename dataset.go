@@ -43,7 +43,7 @@ import (
 
 const (
 	// Version of the dataset package
-	Version = `v0.0.37`
+	Version = `v0.0.38`
 
 	// License is a formatted from for dataset package based command line tools
 	License = `
@@ -317,6 +317,10 @@ func keyAndFName(name string) (string, string) {
 
 // CreateJSON adds a JSON doc to a collection, if a problem occurs it returns an error
 func (c *Collection) CreateJSON(key string, src []byte) error {
+	key = strings.TrimSpace(key)
+	if key == "" || key == ".json" {
+		return fmt.Errorf("must not be empty")
+	}
 	// NOTE: Make sure collection exists before doing anything else!!
 	if len(c.Buckets) == 0 {
 		return fmt.Errorf("collection %q is not valid, zero buckets", c.Name)
@@ -728,10 +732,13 @@ func (c *Collection) KeyFilter(keyList []string, filterExpr string) ([]string, e
 
 	keys := []string{}
 	for _, key := range keyList {
-		m := map[string]interface{}{}
-		if err := c.Read(key, m); err == nil {
-			if ok, err := f.Apply(m); err == nil && ok == true {
-				keys = append(keys, key)
+		key = strings.TrimSpace(key)
+		if len(key) > 0 {
+			m := map[string]interface{}{}
+			if err := c.Read(key, m); err == nil {
+				if ok, err := f.Apply(m); err == nil && ok == true {
+					keys = append(keys, key)
+				}
 			}
 		}
 	}
@@ -741,7 +748,6 @@ func (c *Collection) KeyFilter(keyList []string, filterExpr string) ([]string, e
 // Extract takes a collection, a filter and a dot path and returns a list of unique values
 // E.g. in a collection article records extracting orcid ids which are values in a authors field
 func (c *Collection) Extract(filterExpr string, dotExpr string) ([]string, error) {
-
 	keys, err := c.KeyFilter(c.Keys(), filterExpr)
 	if err != nil {
 		return nil, err
@@ -760,7 +766,7 @@ func (c *Collection) Extract(filterExpr string, dotExpr string) ([]string, error
 						uniqueStrings[hKey] = true
 					}
 				case map[string]interface{}:
-					for _, v := range cell.([]interface{}) {
+					for _, v := range cell.(map[string]interface{}) {
 						hKey = colToString(v)
 						uniqueStrings[hKey] = true
 					}
@@ -768,11 +774,7 @@ func (c *Collection) Extract(filterExpr string, dotExpr string) ([]string, error
 					hKey = colToString(cell)
 					uniqueStrings[hKey] = true
 				}
-			} else if err != nil {
-				return nil, fmt.Errorf("can't parse dotExpr %q", err)
 			}
-		} else {
-			return nil, fmt.Errorf("c.Read() error, %s, %s", key, err)
 		}
 	}
 	rows := []string{}
